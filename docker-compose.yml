@@ -6,5 +6,9 @@ services:
       - "8888:8888"
   redis:
     image: "redis:alpine"
+    ports:
+      - "6379:6379"
   db:
     image: "mongo"
+    ports:
+      - "27017:27017"
