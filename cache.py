@@ -1,16 +1,19 @@
+import redis
+import json
+
 class Cache:
     def __init__(self):
-        # initialize your cache
-        pass
+        self.client = redis.Redis(host='localhost', port=6379)
 
     def get(self, guid):
-        # get a guid from the cache
-        pass
+        result = self.client.get(guid)
+        if result:
+            return json.loads(result)
+        else:
+            return None
 
     def set(self, guid, value):
-        # set a guid in the cache
-        pass
+        self.client.set(guid, json.dumps(value))
 
     def delete(self, guid):
-        # delete a guid from the cache
-        pass
+        self.client.delete(guid)
