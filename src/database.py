@@ -6,8 +6,13 @@ class Database:
         self.db = self.client['guids_data']
 
     def get_guid(self, guid):
-        # implement getting guid from the database
-        pass
+        try:
+            collection = self.db['guids']
+            result = collection.find_one({'_id': guid})
+            return result
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return None
 
     def create_guid(self, guid, metadata):
         try:

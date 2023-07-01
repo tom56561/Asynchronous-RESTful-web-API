@@ -11,8 +11,28 @@ class GUIDHandler(tornado.web.RequestHandler):
         self.cache = Cache()
 
     async def get(self, guid=None):
-        # implement your GET logic here
-        pass
+        if not guid:
+            self.set_status(400)
+            self.write({'error': 'GUID not provided.'})
+            return
+
+        # Try getting the metadata from the cache first
+        metadata = self.cache.get(guid)
+        if metadata is None:
+            # If the metadata is not in the cache, get it from the database
+            metadata = self.db.get_guid(guid)
+
+            # If the metadata is still None after querying the database, the GUID does not exist
+            if metadata is None:
+                self.set_status(404)
+                self.write({'error': 'GUID not found.'})
+                return
+
+            # Put the metadata in the cache for future use
+            self.cache.set(guid, metadata)
+
+        self.write(metadata)
+
 
     async def post(self, guid=None):
         data = json.loads(self.request.body)
