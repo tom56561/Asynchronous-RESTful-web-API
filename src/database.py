@@ -2,7 +2,7 @@ from pymongo import MongoClient
 
 class Database:
     def __init__(self):
-        self.client = MongoClient('localhost', 27017)
+        self.client = MongoClient('db', 27017)
         self.db = self.client['guids_data']
 
     def get_guid(self, guid):

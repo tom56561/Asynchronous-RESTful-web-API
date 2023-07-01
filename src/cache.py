@@ -3,7 +3,7 @@ import json
 
 class Cache:
     def __init__(self):
-        self.client = redis.Redis(host='localhost', port=6379)
+        self.client = redis.Redis(host='redis', port=6379)
 
     def get(self, guid):
         result = self.client.get(guid)
