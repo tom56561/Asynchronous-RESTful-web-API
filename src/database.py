@@ -28,6 +28,11 @@ class Database:
         pass
 
     def delete_guid(self, guid):
-        # implement deleting guid from the database
-        pass
+        try:
+            collection = self.db['guids']
+            result = collection.delete_one({'_id': guid})
+            return result.acknowledged
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return False
 

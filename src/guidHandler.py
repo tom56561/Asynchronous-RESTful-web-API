@@ -55,5 +55,10 @@ class GUIDHandler(tornado.web.RequestHandler):
             self.write({'error': 'Failed to create GUID.'})
 
     async def delete(self, guid=None):
-        # implement your DELETE logic here
-        pass
+        result = self.db.delete_guid(guid)
+        if result:
+            self.cache.delete(guid)
+            self.set_status(204)  # No content
+        else:
+            self.set_status(500)
+            self.write({'error': 'Failed to delete GUID.'})
