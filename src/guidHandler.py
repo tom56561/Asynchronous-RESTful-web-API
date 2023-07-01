@@ -62,3 +62,19 @@ class GUIDHandler(tornado.web.RequestHandler):
         else:
             self.set_status(500)
             self.write({'error': 'Failed to delete GUID.'})
+
+    async def put(self, guid=None):
+        if guid is None:
+            self.set_status(400)
+            self.write({'error': 'GUID must be provided for update.'})
+            return
+
+        data = json.loads(self.request.body)
+        result = self.db.update_guid(guid, data)
+        if result:
+            updated_data = self.db.get_guid(guid)
+            self.cache.set(guid, updated_data)
+            self.write(updated_data)
+        else:
+            self.set_status(500)
+            self.write({'error': 'Failed to update GUID.'})

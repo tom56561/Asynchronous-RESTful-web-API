@@ -24,8 +24,13 @@ class Database:
             return False
 
     def update_guid(self, guid, metadata):
-        # implement updating guid in the database
-        pass
+        try:
+            collection = self.db['guids']
+            result = collection.update_one({'_id': guid}, {'$set': metadata})
+            return result.acknowledged
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return False
 
     def delete_guid(self, guid):
         try:
