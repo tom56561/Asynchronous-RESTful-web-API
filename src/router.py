@@ -1,6 +1,6 @@
 import tornado.web
-from MainHandler import MainHandler
-from GuidHandler import GUIDHandler
+from mainHandler import MainHandler
+from guidHandler import GUIDHandler
 
 def make_app():
     return tornado.web.Application([

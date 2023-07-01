@@ -1,6 +1,6 @@
 import tornado.web
-from src.database import Database
-from src.cache import Cache
+from database import Database
+from cache import Cache
 import uuid
 import time
 import json
