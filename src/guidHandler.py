@@ -7,11 +7,21 @@ import time
 import json
 
 class GUIDHandler(tornado.web.RequestHandler):
+    """
+    Handles HTTP requests related to GUIDs (Globally Unique Identifiers). 
+    Works with a Database class for storing GUID data and a Cache class for caching GUID data.
+    """
+
     def initialize(self):
+        """Initializes a new instance of the GUIDHandler."""
         self.db = Database()
         self.cache = Cache()
     
     def validate_input(self, data):
+        """
+        Validates input data for a new or existing GUID. 
+        Returns a dictionary mapping field names to error messages if there are errors.
+        """
         user = data.get('user')
         expire = data.get('expire')
 
@@ -29,34 +39,41 @@ class GUIDHandler(tornado.web.RequestHandler):
         return errors
 
     def check_guid(self, guid):
+        """
+        Checks whether a GUID has been provided. If not, sends a 400 error response and returns False.
+        """
         if not guid:
             self.send_error(400, message="GUID not provided.")
             return False
         return True
 
     async def get(self, guid=None):
+        """
+        Handles HTTP GET requests for a GUID. If a GUID is provided, it attempts to retrieve its data.
+        If the GUID does not exist in the database, sends a 404 error response.
+        """
         if not self.check_guid(guid):
             return
 
-        # Try getting the metadata from the cache first
         metadata = self.cache.get(guid)
         if metadata is None:
-            # If the metadata is not in the cache, get it from the database
             metadata = self.db.get_guid(guid)
 
-            # If the metadata is still None after querying the database, the GUID does not exist
             if metadata is None:
                 self.set_status(404)
                 self.write({'error': 'GUID not found or has expired.'})
                 return
 
-            # Put the metadata in the cache for future use
             self.cache.set(guid, metadata)
 
         self.write(metadata)
 
 
     async def post(self, guid=None):
+        """
+        Handles HTTP POST requests to create a new GUID or update an existing one. 
+        If the input data is valid, it creates or updates the GUID, else it sends a 400 error response.
+        """
         data = json.loads(self.request.body)
 
         errors = self.validate_input(data)
@@ -85,6 +102,9 @@ class GUIDHandler(tornado.web.RequestHandler):
             self.write({'error': 'Failed to create GUID.'})
 
     async def delete(self, guid=None):
+        """
+        Handles HTTP DELETE requests to delete a GUID. If a GUID is provided, it deletes it.
+        """
         if not self.check_guid(guid):
             return
         
@@ -97,6 +117,10 @@ class GUIDHandler(tornado.web.RequestHandler):
             self.write({'error': 'Failed to delete GUID.'})
 
     async def patch(self, guid=None):
+        """
+        Handles HTTP PATCH requests to update an existing GUID. 
+        If a GUID is provided and the input data is valid, it updates the GUID, else it sends a 400 error response.
+        """
         if not self.check_guid(guid):
             return
         
