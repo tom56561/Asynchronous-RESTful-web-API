@@ -1,5 +1,6 @@
 import redis
 import json
+import time
 
 class Cache:
     def __init__(self):
@@ -15,6 +16,10 @@ class Cache:
 
     def set(self, guid, value):
         ttl = self.default_ttl
+        remainingTime = value['expire'] - int(time.time())
+
+        if remainingTime < ttl:
+            ttl = remainingTime
         self.client.set(guid, json.dumps(value), ex=ttl)
 
     def delete(self, guid):

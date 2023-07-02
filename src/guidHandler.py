@@ -1,6 +1,7 @@
 import tornado.web
 from database import Database
 from cache import Cache
+import time
 import uuid
 import time
 import json
@@ -25,7 +26,7 @@ class GUIDHandler(tornado.web.RequestHandler):
             # If the metadata is still None after querying the database, the GUID does not exist
             if metadata is None:
                 self.set_status(404)
-                self.write({'error': 'GUID not found.'})
+                self.write({'error': 'GUID not found or has expired.'})
                 return
 
             # Put the metadata in the cache for future use
@@ -37,7 +38,8 @@ class GUIDHandler(tornado.web.RequestHandler):
     async def post(self, guid=None):
         data = json.loads(self.request.body)
         user = data.get('user')
-        expire = data.get('expire', time.time() + 30*24*60*60)  # defaults to 30 days from now
+        # defaults to 30 days from now and store it as Unix time
+        expire = int(data.get('expire', int(time.time()) + 30*24*60*60))
         guid = guid or uuid.uuid4().hex.upper()
 
         metadata = {
@@ -55,6 +57,11 @@ class GUIDHandler(tornado.web.RequestHandler):
             self.write({'error': 'Failed to create GUID.'})
 
     async def delete(self, guid=None):
+        if guid is None:
+            self.set_status(400)
+            self.write({'error': 'GUID must be provided for delete.'})
+            return
+        
         result = self.db.delete_guid(guid)
         if result:
             self.cache.delete(guid)
@@ -63,7 +70,7 @@ class GUIDHandler(tornado.web.RequestHandler):
             self.set_status(500)
             self.write({'error': 'Failed to delete GUID.'})
 
-    async def put(self, guid=None):
+    async def patch(self, guid=None):
         if guid is None:
             self.set_status(400)
             self.write({'error': 'GUID must be provided for update.'})

@@ -2,7 +2,7 @@ import unittest
 import tornado.ioloop
 import tornado.testing
 import json
-from app import make_app 
+from src.app import make_app 
 
 class TestApp(tornado.testing.AsyncHTTPTestCase):
     def get_app(self):
