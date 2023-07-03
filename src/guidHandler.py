@@ -1,6 +1,6 @@
 import tornado.web
-from database import Database
-from cache import Cache
+from .database import Database
+from .cache import Cache
 import time
 import uuid
 import time
@@ -12,10 +12,10 @@ class GUIDHandler(tornado.web.RequestHandler):
     Works with a Database class for storing GUID data and a Cache class for caching GUID data.
     """
 
-    def initialize(self):
+    def initialize(self, db, cache):
         """Initializes a new instance of the GUIDHandler."""
-        self.db = Database()
-        self.cache = Cache()
+        self.db = db
+        self.cache = cache
     
     def validate_input(self, data):
         """
@@ -113,8 +113,8 @@ class GUIDHandler(tornado.web.RequestHandler):
             self.cache.delete(guid)
             self.set_status(204)  # No content
         else:
-            self.set_status(500)
-            self.write({'error': 'Failed to delete GUID.'})
+            self.set_status(404)
+            self.write({'error': 'GUID not found.'})
 
     async def patch(self, guid=None):
         """
@@ -124,13 +124,13 @@ class GUIDHandler(tornado.web.RequestHandler):
         if not self.check_guid(guid):
             return
         
+        data = json.loads(self.request.body)
         errors = self.validate_input(data)
         if errors:
             self.set_status(400)
             self.write({'errors': errors})
             return
 
-        data = json.loads(self.request.body)
         result = self.db.update_guid(guid, data)
         if result:
             updated_data = self.db.get_guid(guid)

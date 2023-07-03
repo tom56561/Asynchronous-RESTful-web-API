@@ -16,6 +16,9 @@ class Database:
         """Fetches a GUID document from the MongoDB collection."""
         try:
             result = self.guids.find_one({'_id': guid, 'expire': {'$gt': int(time.time())}})
+            if result is not None:
+                # Remove '_id' key from the dict
+                result.pop('_id', None)
             return result
         except Exception as e:
             print(f"An error occurred: {e}")

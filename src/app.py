@@ -1,5 +1,5 @@
 import tornado.ioloop
-from router import make_app
+from .router import make_app
 
 if __name__ == "__main__":
     app = make_app()
