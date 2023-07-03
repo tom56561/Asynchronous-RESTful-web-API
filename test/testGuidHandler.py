@@ -166,4 +166,42 @@ class TestGUIDHandler(tornado.testing.AsyncHTTPTestCase):
         self.assertIn(b'"user": "User must be a string."', response.body)
         self.assertIn(b'"expire": "Expire must be a string of digits."', response.body)
 
+    @gen_test
+    def test_post_missing_user(self):
+        """
+        Test case for HTTP POST request with missing user field.
+        It tests if a 400 status code is returned and an appropriate error message is included in the response body
+        when the user field is missing in the request body for GUID creation.
+        """
+        self.mock_db.create_guid.return_value = True
+        body = json.dumps({"expire": "1692444800"})
+        response = yield self.http_client.fetch(self.get_url("/guid"), method="POST", body=body, raise_error=False)
+        self.assertEqual(response.code, 400)
+        self.assertIn(b'"user": "User field is required."', response.body)
+
+    @gen_test
+    def test_post_invalid_expire(self):
+        """
+        Test case for HTTP POST request with invalid expire field.
+        It tests if a 400 status code is returned and an appropriate error message is included in the response body
+        when the expire field is not a string of digits in the request body for GUID creation.
+        """
+        self.mock_db.create_guid.return_value = True
+        body = json.dumps({"user": "test_user", "expire": "invalid_timestamp"})
+        response = yield self.http_client.fetch(self.get_url("/guid"), method="POST", body=body, raise_error=False)
+        self.assertEqual(response.code, 400)
+        self.assertIn(b'"expire": "Expire must be a string of digits."', response.body)
+
+    @gen_test
+    def test_delete_non_existing_guid(self):
+        """
+        Test case for HTTP DELETE request for a non-existing GUID.
+        It tests if a 404 status code is returned and an appropriate error message is included in the response body
+        when attempting to delete a non-existing GUID.
+        """
+        guid = "FA3A9A3A3A3A3A3A3A3A3A3A3A3A3A3A"
+        self.mock_db.delete_guid.return_value = False
+        response = yield self.http_client.fetch(self.get_url(f"/guid/{guid}"), method="DELETE", raise_error=False)
+        self.assertEqual(response.code, 404)
+        self.assertIn(b'GUID not found.', response.body)
 

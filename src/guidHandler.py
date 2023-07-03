@@ -27,7 +27,9 @@ class GUIDHandler(tornado.web.RequestHandler):
 
         errors = {}
 
-        if user is not None and not isinstance(user, str):
+        if user is None:
+            errors['user'] = 'User field is required.'
+        elif not isinstance(user, str):
             errors['user'] = 'User must be a string.'
 
         if expire is not None:
