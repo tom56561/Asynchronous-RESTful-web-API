@@ -100,3 +100,70 @@ class TestGUIDHandler(tornado.testing.AsyncHTTPTestCase):
         response = yield self.http_client.fetch(self.get_url(f"/guid/{guid}"), method="PATCH", body=body, raise_error=False)
         self.assertEqual(response.code, 200)
     
+    @gen_test
+    def test_post_server_error(self):
+        """
+        Test case for HTTP POST request when there's a server error during GUID creation.
+        It tests if a 500 status code is returned when there's a server error during GUID creation.
+        """
+        self.mock_db.create_guid.return_value = False
+        body = json.dumps({"user": "test_user", "expire": "1692444800"})
+        response = yield self.http_client.fetch(self.get_url(f"/guid"), method="POST", body=body, raise_error=False)
+        self.assertEqual(response.code, 500)
+    
+    @gen_test
+    def test_patch_server_error(self):
+        """
+        Test case for HTTP PATCH request when there's a server error during GUID update.
+        It tests if a 500 status code is returned when there's a server error during GUID update.
+        """
+        guid = "FA3A9A3A3A3A3A3A3A3A3A3A3A3A3A3A"
+        metadata = {'guid': guid, 'user': 'test_user', 'expire': 1692444800}
+        self.mock_db.get_guid.return_value = metadata
+        self.mock_db.update_guid.return_value = False
+        body = json.dumps({"user": "updated_user", "expire": "1692444800"})
+        response = yield self.http_client.fetch(self.get_url(f"/guid/{guid}"), method="PATCH", body=body, raise_error=False)
+        self.assertEqual(response.code, 500)
+
+    @gen_test
+    def test_delete_no_guid(self):
+        """
+        Test case for HTTP DELETE request when the GUID is not provided.
+        It tests if a 400 status code is returned when the GUID is not properly provided.
+        """
+        self.mock_db.delete_guid.return_value = True
+        response = yield self.http_client.fetch(self.get_url(f"/guid"), method="DELETE", raise_error=False)
+        self.assertEqual(response.code, 400)
+
+    @gen_test    
+    def test_post_invalid_data(self):
+        """
+        Test case for HTTP POST request with invalid data for GUID creation.
+        It tests if a 400 status code is returned and the appropriate error messages are included in the response body
+        when invalid data is provided for GUID creation.
+        """
+        self.mock_db.create_guid.return_value = True
+        body = json.dumps({"user": 123, "expire": "invalid_timestamp"})
+        response = yield self.http_client.fetch(self.get_url(f"/guid"), method="POST", body=body, raise_error=False)
+        self.assertEqual(response.code, 400)
+        self.assertIn(b'"user": "User must be a string."', response.body)
+        self.assertIn(b'"expire": "Expire must be a string of digits."', response.body)
+
+    @gen_test
+    def test_patch_invalid_data(self):
+        """
+        Test case for HTTP PATCH request with invalid data for GUID update.
+        It tests if a 400 status code is returned and the appropriate error messages are included in the response body
+        when invalid data is provided for GUID update.
+        """
+        guid = "FA3A9A3A3A3A3A3A3A3A3A3A3A3A3A3A"
+        metadata = {'guid': guid, 'user': 'test_user', 'expire': 1692444800}
+        self.mock_db.get_guid.return_value = metadata
+        self.mock_db.update_guid.return_value = True
+        body = json.dumps({"user": 123, "expire": "invalid_timestamp"})
+        response = yield self.http_client.fetch(self.get_url(f"/guid/{guid}"), method="PATCH", body=body, raise_error=False)
+        self.assertEqual(response.code, 400)
+        self.assertIn(b'"user": "User must be a string."', response.body)
+        self.assertIn(b'"expire": "Expire must be a string of digits."', response.body)
+
+
