@@ -1,7 +1,10 @@
 # GUID Asynchronous RESTful API
 
 ## Description
-This project is a RESTful API that provides a way to create, read, update, and delete GUIDs. It's written in Python, using Tornado for the web server, Redis for caching, and MongoDB for persistent storage.
+This project is a RESTful API that provides a way to create, read, update, and delete GUIDs (Global Unique Identifier). It's written in Python, using Tornado for the web server, Redis for caching, and MongoDB for persistent storage.
+
+## Component Diagram
+![Component Diagram](/component%20diagram.png)
 
 ## Installation and Test
 ```bash
@@ -87,4 +90,4 @@ Delete a specific GUID.
 - Error Response:
   - Status: `404 Not Found`
 
-
+## Extension
