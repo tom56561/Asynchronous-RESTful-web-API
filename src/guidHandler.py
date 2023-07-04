@@ -90,6 +90,7 @@ class GUIDHandler(tornado.web.RequestHandler):
         guid = guid or uuid.uuid4().hex.upper()
 
         metadata = {
+            'guid':guid,
             'user': user,
             'expire': expire
         }

@@ -23,10 +23,11 @@ class Cache:
     def set(self, guid, value):
         """Stores GUID data in the cache with an appropriate time-to-live."""
         ttl = self.default_ttl
-        remaining_time = value['expire'] - int(time.time())
+        if value is not None:
+            remaining_time = value['expire'] - int(time.time())
 
-        if remaining_time < ttl:
-            ttl = remaining_time
+            if remaining_time < ttl:
+                ttl = remaining_time
         self.client.set(guid, json.dumps(value), ex=ttl)
 
     def delete(self, guid):

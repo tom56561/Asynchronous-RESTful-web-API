@@ -14,10 +14,19 @@ class TestGUIDIntegration(AsyncHTTPTestCase):
     GUIDS = [uuid.uuid4().hex.upper() for _ in range(100)]
 
     def get_app(self):
+        """Returns the Tornado application to be used for testing."""
         return make_app(db=Database(), cache=Cache())
     
     @gen_test
     async def test_async_guid_lifecycle(self):
+        """
+        This test checks the complete lifecycle of a GUID:
+        - POST to create the GUID
+        - GET to fetch the GUID
+        - PATCH to update the GUID
+        - DELETE to remove the GUID
+        - GET after deletion to verify that the GUID was removed
+        """
         http_client = AsyncHTTPClient()
         
         for guid in self.GUIDS:
