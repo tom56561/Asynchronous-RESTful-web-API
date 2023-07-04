@@ -33,7 +33,7 @@ class GUIDHandler(tornado.web.RequestHandler):
             errors['user'] = 'User must be a string.'
 
         if expire is not None:
-            if not expire.isdigit():
+            if not str(expire).isdigit():
                 errors['expire'] = 'Expire must be a string of digits.'
             elif int(expire) <= int(time.time()):
                 errors['expire'] = 'Expire must be a future Unix timestamp.'
@@ -90,7 +90,6 @@ class GUIDHandler(tornado.web.RequestHandler):
         guid = guid or uuid.uuid4().hex.upper()
 
         metadata = {
-            'guid': guid,
             'user': user,
             'expire': expire
         }
@@ -98,6 +97,7 @@ class GUIDHandler(tornado.web.RequestHandler):
         result = self.db.create_guid(guid, metadata)
         if result:
             self.cache.set(guid, metadata)
+            self.set_status(201)
             self.write(metadata)
         else:
             self.set_status(500)

@@ -41,7 +41,7 @@ class TestGUIDHandler(tornado.testing.AsyncHTTPTestCase):
         """
         Test case for HTTP POST request to create a new GUID.
         It tests two scenarios:
-        1. Creating a new GUID with valid data should return a 200 status code.
+        1. Creating a new GUID with valid data should return a 201 status code.
         2. Creating a new GUID with invalid data should return a 400 status code.
         """
         self.mock_db.create_guid.return_value = True
@@ -49,7 +49,7 @@ class TestGUIDHandler(tornado.testing.AsyncHTTPTestCase):
         # Test creating a new GUID
         body = json.dumps({"user": "test_user", "expire": "1692444800"})
         response = yield self.http_client.fetch(self.get_url("/guid"), method="POST", body=body, raise_error=False)
-        self.assertEqual(response.code, 200)
+        self.assertEqual(response.code, 201)
 
         # Test creating a new GUID with invalid data
         body = json.dumps({"user": "test_user", "expire": "invalid"})
