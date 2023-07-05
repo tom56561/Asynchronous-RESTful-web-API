@@ -164,7 +164,7 @@ Delete a specific GUID.
 
 
 3. What else I can do?
-   - ***Implement rate limiting***: To protect the API from being overwhelmed by too many requests, I could add rate limiting functionality.
+   - ***Implement rate limiting***: To protect the API from being overwhelmed by too many requests, I could add rate limiting functionality. e.g. Nginx, AWS API Gateway.
    - ***Enhance security***: Implement more robust security measures, such as OAuth for API authentication. Ensure encrypted connections via HTTPS.
    - ***Automated Testing***: Increase the coverage of my unit and integration tests. Implementing Continuous Integration (CI) and Continuous Deployment (CD) pipelines can also ensure that the codebase remains robust and reliable.
    - ***Utilized Stress Testing***: Testing that checks the stability and reliability of the system under extreme conditions.
