@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: async-guid-api
+  namespace: eddie-poc
+  labels:
+    app: async-guid-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: async-guid-api
+  template:
+    metadata:
+      labels:
+        app: async-guid-api
+    spec:
+      containers:
+      - name: async-guid-api
+        image: eddie56/async-guid-api:v1.0
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: async-guid-api
+          containerPort: 5000
