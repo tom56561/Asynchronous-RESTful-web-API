@@ -137,7 +137,9 @@ class GUIDHandler(tornado.web.RequestHandler):
             self.set_status(400)
             self.write({'errors': errors})
             return
-
+    
+        if data.get('expire') is not None:
+            data['expire'] = int(data.get('expire'))
         result = self.db.update_guid(guid, data)
         if result:
             updated_data = self.db.get_guid(guid)
