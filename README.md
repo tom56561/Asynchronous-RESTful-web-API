@@ -42,7 +42,7 @@ The command will find and run all the test cases in the project.
 
 ## RESTful API Documentation
 
-### 1. POST /guid or POST /guid{guid}
+### 1. POST /guid or POST /guid/{guid}
 Create a new GUID.
 
 - Request Body:
