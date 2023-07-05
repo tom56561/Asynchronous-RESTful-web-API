@@ -18,7 +18,7 @@ The purpose of the project is to design and implement a web API for performing C
 ### Technology Stack
 1. **Web Framework**: Tornado
 2. **Cache Layer**: Redis
-3. **Persistent Data Storage**: MySQL/MongoDB
+3. **Persistent Data Storage**: MongoDB
 
 ### Error Codes
 The service should return appropriate HTTP status codes:
@@ -42,7 +42,7 @@ The command will find and run all the test cases in the project.
 
 ## RESTful API Documentation
 
-### 1. POST /guid
+### 1. POST /guid or POST /guid{guid}
 Create a new GUID.
 
 - Request Body:
@@ -123,7 +123,7 @@ Delete a specific GUID.
     - Access to an SSH key pair for connecting to the EC2 instances.
 
     ### Steps to Deploy
-    Apply the Zookeeper, Kafka, and ebanking-portal manifest:
+    Apply the async-guid-app and service:
     ```bash
     kubectl apply -f deployment.yaml
     kubectl apply -f service.yaml
@@ -151,9 +151,8 @@ Delete a specific GUID.
     kubectl get node -o wide
 
     NAME                           STATUS   ROLES    AGE     VERSION               INTERNAL-IP    EXTERNAL-IP   OS-IMAGE         KERNEL-VERSION                  CONTAINER-RUNTIME
-    ip-10-107-8-103.ec2.internal   Ready    <none>   62d     v1.25.7-eks-a59e1f0   10.107.8.103   <none>        Amazon Linux 2   5.10.173-154.642.amzn2.x86_64   containerd://1.6.6
-    ip-10-107-8-106.ec2.internal   Ready    <none>   4d12h   v1.25.7-eks-a59e1f0   10.107.8.106   <none>        Amazon Linux 2   5.10.173-154.642.amzn2.x86_64   containerd://1.6.6
-    ip-10-107-8-111.ec2.internal   Ready    <none>   23h     v1.25.7-eks-a59e1f0   10.107.8.111   <none>        Amazon Linux 2   5.10.173-154.642.amzn2.x86_64   containerd://1.6.6
+    ip-10-107-8-174.ec2.internal   Ready    <none>   22h     v1.25.7-eks-a59e1f0   10.107.8.174   <none>        Amazon Linux 2   5.10.173-154.642.amzn2.x86_64   containerd://1.6.6
+    ip-10-107-9-141.ec2.internal   Ready    <none>   3h18m   v1.25.7-eks-a59e1f0   10.107.9.141   <none>        Amazon Linux 2   5.10.173-154.642.amzn2.x86_64   containerd://1.6.6
     ```
 
 2. Design API using "Producer-Consumer" Pattern (Kafka)
