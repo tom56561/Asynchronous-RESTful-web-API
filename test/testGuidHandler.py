@@ -147,7 +147,7 @@ class TestGUIDHandler(tornado.testing.AsyncHTTPTestCase):
         response = yield self.http_client.fetch(self.get_url(f"/guid"), method="POST", body=body, raise_error=False)
         self.assertEqual(response.code, 400)
         self.assertIn(b'"user": "User must be a string."', response.body)
-        self.assertIn(b'"expire": "Expire must be a string of digits."', response.body)
+        self.assertIn(b'"expire": "Expire must be a string or number of digits."', response.body)
 
     @gen_test
     def test_patch_invalid_data(self):
@@ -164,7 +164,7 @@ class TestGUIDHandler(tornado.testing.AsyncHTTPTestCase):
         response = yield self.http_client.fetch(self.get_url(f"/guid/{guid}"), method="PATCH", body=body, raise_error=False)
         self.assertEqual(response.code, 400)
         self.assertIn(b'"user": "User must be a string."', response.body)
-        self.assertIn(b'"expire": "Expire must be a string of digits."', response.body)
+        self.assertIn(b'"expire": "Expire must be a string or number of digits."', response.body)
 
     @gen_test
     def test_post_missing_user(self):
@@ -190,7 +190,7 @@ class TestGUIDHandler(tornado.testing.AsyncHTTPTestCase):
         body = json.dumps({"user": "test_user", "expire": "invalid_timestamp"})
         response = yield self.http_client.fetch(self.get_url("/guid"), method="POST", body=body, raise_error=False)
         self.assertEqual(response.code, 400)
-        self.assertIn(b'"expire": "Expire must be a string of digits."', response.body)
+        self.assertIn(b'"expire": "Expire must be a string or number of digits."', response.body)
 
     @gen_test
     def test_delete_non_existing_guid(self):

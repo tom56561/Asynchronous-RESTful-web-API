@@ -26,6 +26,9 @@ class GUIDHandler(tornado.web.RequestHandler):
         expire = data.get('expire')
 
         errors = {}
+        if user is None and expire is None:
+            errors['invalid'] = "Input data should not be empty."
+            return errors
 
         if user is None:
             errors['user'] = 'User field is required.'
@@ -34,7 +37,7 @@ class GUIDHandler(tornado.web.RequestHandler):
 
         if expire is not None:
             if not str(expire).isdigit():
-                errors['expire'] = 'Expire must be a string of digits.'
+                errors['expire'] = 'Expire must be a string or number of digits.'
             elif int(expire) <= int(time.time()):
                 errors['expire'] = 'Expire must be a future Unix timestamp.'
 
@@ -45,7 +48,8 @@ class GUIDHandler(tornado.web.RequestHandler):
         Checks whether a GUID has been provided. If not, sends a 400 error response and returns False.
         """
         if not guid:
-            self.send_error(400, message="GUID not provided.")
+            self.set_status(400)
+            self.write({'error': 'GUID not provided.'})
             return False
         return True
 
