@@ -27,7 +27,7 @@ The service should return appropriate HTTP status codes:
 - 500's on server errors
 
 ## Component Diagram
-![Component Diagram](/component%20diagram.png)
+![Component Diagram](/png/component%20diagram.png)
 
 ## Installation and Test
 ```bash
@@ -113,4 +113,59 @@ Delete a specific GUID.
 - Error Response:
   - Status: `404 Not Found`
 
-## Extension
+## Bonus Points
+
+1. Deploying Kubernetes on AWS EC2
+    ### Prerequisites
+
+    - AWS account with appropriate permissions to create EC2 instances, security groups, and other resources.
+    - AWS CLI installed and configured with your AWS credentials.
+    - Access to an SSH key pair for connecting to the EC2 instances.
+
+    ### Steps to Deploy
+    Apply the Zookeeper, Kafka, and ebanking-portal manifest:
+    ```bash
+    kubectl apply -f deployment.yaml
+    kubectl apply -f service.yaml
+    ```
+    Check the status of the deployed resources:
+    ```bash
+    kubectl -n eddie-poc get all 
+
+    NAME                                  READY   STATUS    RESTARTS   AGE
+    pod/async-guid-api-6844fdb56c-fqqtx   1/1     Running   0          7m9s
+    pod/async-guid-api-6844fdb56c-w6ffz   1/1     Running   0          7m9s
+
+    NAME                     TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)   AGE
+    service/async-guid-api   ClusterIP   172.20.214.21   <none>        80/TCP    6m47s
+
+    NAME                             READY   UP-TO-DATE   AVAILABLE   AGE
+    deployment.apps/async-guid-api   2/2     2            2           7m10s
+
+    NAME                                        DESIRED   CURRENT   READY   AGE
+    replicaset.apps/async-guid-api-6844fdb56c   2         2         2       7m11s
+    ```
+
+    Check the node details:
+    ```bash
+    kubectl get node -o wide
+
+    NAME                           STATUS   ROLES    AGE     VERSION               INTERNAL-IP    EXTERNAL-IP   OS-IMAGE         KERNEL-VERSION                  CONTAINER-RUNTIME
+    ip-10-107-8-103.ec2.internal   Ready    <none>   62d     v1.25.7-eks-a59e1f0   10.107.8.103   <none>        Amazon Linux 2   5.10.173-154.642.amzn2.x86_64   containerd://1.6.6
+    ip-10-107-8-106.ec2.internal   Ready    <none>   4d12h   v1.25.7-eks-a59e1f0   10.107.8.106   <none>        Amazon Linux 2   5.10.173-154.642.amzn2.x86_64   containerd://1.6.6
+    ip-10-107-8-111.ec2.internal   Ready    <none>   23h     v1.25.7-eks-a59e1f0   10.107.8.111   <none>        Amazon Linux 2   5.10.173-154.642.amzn2.x86_64   containerd://1.6.6
+    ```
+
+2. Design API using "Producer-Consumer" Pattern (Kafka)
+   
+   It is ideal for work that is CPU-intensive or involves substantial I/O operations.This can be particularly useful in scenarios where I want to decouple the task creation and the task execution. For example, if the creation or update of the GUID requires heavy computation or needs to be distributed across different worker instances, this approach can be very beneficial.
+
+   ### Bounded-Buffer Component Diagram
+   ![Bounded-Buffer Component Diagram](/png/kafka%20component.png)
+
+
+3. What else I can do?
+   - ***Implement rate limiting***: To protect the API from being overwhelmed by too many requests, I could add rate limiting functionality.
+   - ***Enhance security***: Implement more robust security measures, such as OAuth for API authentication. Ensure encrypted connections via HTTPS.
+   - ***Automated Testing***: Increase the coverage of my unit and integration tests. Implementing Continuous Integration (CI) and Continuous Deployment (CD) pipelines can also ensure that the codebase remains robust and reliable.
+   - ***Utilized Stress Testing***: Testing that checks the stability and reliability of the system under extreme conditions.
